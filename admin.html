@@ -5,6 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Review Moderation</title>
     <link rel="stylesheet" href="/style.css">
+    <style>
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .stat-card.positive {
+            border-left-color: #10b981;
+        }
+        
+        .stat-card.negative {
+            border-left-color: #ef4444;
+        }
+        
+        .stat-card.spam {
+            border-left-color: #f59e0b;
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+        }
+        
+        .stat-info h3 {
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-card.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .dashboard-card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .products-stats {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .product-stat {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .product-stat h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .product-stat p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .system-info p {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .system-info strong {
+            color: #333;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #666;
+        }
+        
+        .admin-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .review-text-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .rules-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .rules-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: #666;
+        }
+        
+        .rules-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-table {
+                font-size: 14px;
+            }
+            
+            .admin-table th,
+            .admin-table td {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
