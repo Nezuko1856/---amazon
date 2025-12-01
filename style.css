@@ -370,17 +370,26 @@ textarea:focus {
 .reviewer {
     font-weight: 600;
     color: #333;
+    min-width: 120px;
 }
 
 .review-rating {
     color: #ffd700;
+    min-width: 80px;
 }
 
+/* FIXED: Prediction badge - теперь всегда в одну строку */
 .sentiment-badge {
-    padding: 5px 12px;
+    padding: 6px 12px;
     border-radius: 15px;
     font-size: 0.8em;
     font-weight: 600;
+    white-space: nowrap; /* Важно: запрещаем перенос строк */
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 140px;
+    justify-content: center;
 }
 
 .sentiment-badge.positive {
@@ -410,11 +419,15 @@ textarea:focus {
     align-items: center;
     color: #999;
     font-size: 0.9em;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .reason {
     color: #f59e0b;
     font-style: italic;
+    max-width: 300px;
+    word-wrap: break-word;
 }
 
 .no-reviews {
@@ -537,11 +550,14 @@ textarea:focus {
 
 .table-container {
     overflow-x: auto;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
+    background: white;
 }
 
 .admin-table th {
@@ -550,21 +566,49 @@ textarea:focus {
     padding: 15px;
     text-align: left;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .admin-table td {
     padding: 15px;
     border-bottom: 1px solid #e5e7eb;
     color: #666;
+    vertical-align: middle;
 }
 
 .admin-table tr:hover {
     background: #f8fafc;
 }
 
+/* FIXED: Ячейка Prediction в таблице админки */
+.admin-table .sentiment-badge {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 600;
+    white-space: nowrap; /* Запрещаем перенос */
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .review-text-cell {
     max-width: 200px;
     word-wrap: break-word;
+}
+
+/* FIXED: Строка таблицы с отзывами */
+.review-row td {
+    white-space: nowrap;
+}
+
+.review-row .review-text-cell {
+    white-space: normal;
+    max-width: 250px;
+    min-width: 200px;
 }
 
 .rules-list {
@@ -600,6 +644,8 @@ textarea:focus {
     transform: translateX(400px);
     transition: transform 0.3s ease;
     z-index: 1000;
+    max-width: 400px;
+    word-wrap: break-word;
 }
 
 .notification.show {
@@ -634,6 +680,183 @@ textarea:focus {
     100% { transform: rotate(360deg); }
 }
 
+/* Main page products grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin: 40px 0;
+}
+
+.product-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.product-info h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.3em;
+}
+
+.category {
+    color: #667eea;
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #666;
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #764ba2;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.review-count {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.view-btn {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.store-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.store-header h1 {
+    font-size: 2.8em;
+    margin-bottom: 10px;
+}
+
+.store-header p {
+    color: #666;
+    font-size: 1.1em;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.filters {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.store-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin: 50px 0;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.feature-icon {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.feature-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px;
+    background: #f8fafc;
+    border-radius: 15px;
+    color: #666;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .container {
@@ -666,5 +889,46 @@ textarea:focus {
     .admin-table th,
     .admin-table td {
         padding: 10px;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .sentiment-badge {
+        min-width: 120px;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .store-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-price-rating {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .review-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .sentiment-badge {
+        font-size: 0.7em;
+        padding: 4px 8px;
     }
 }
