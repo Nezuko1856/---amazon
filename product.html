@@ -10,12 +10,12 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <h1>🛍️ TechStore</h1>
+                <h1> TechStore</h1>
                 <p>Smart Products Marketplace</p>
             </div>
             <div class="nav-links">
-                <a href="/" class="nav-link">← Back to Store</a>
-                <a href="/admin" class="nav-link">Admin Panel</a>
+                <a href="/" class="nav-link">← Вернуться в магазин</a>
+                <a href="/admin" class="nav-link">Панель администратора</a>
             </div>
         </div>
     </nav>
@@ -48,30 +48,30 @@
                     <div class="product-features">
                         <h3>Key Features</h3>
                         <ul>
-                            <li>Premium quality materials</li>
-                            <li>Latest technology integration</li>
-                            <li>1-year warranty included</li>
-                            <li>Free shipping available</li>
+                            <li>Материалы высшего качества</li>
+                            <li>Интеграция новейших технологий</li>
+                            <li>гарантия на 1 год включена в стоимость</li>
+                            <li>Доступна бесплатная доставка</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
             <div class="reviews-section">
-                <h2>Customer Reviews <span class="ai-badge">🤖 AI-Moderated</span></h2>
+                <h2>Отзывы клиентов <span class="ai-badge"> AI-Moderated</span></h2>
                 
                 <div class="review-form-container">
-                    <h3>Write a Review</h3>
+                    <h3>Написать отзыв</h3>
                     <form id="reviewForm">
                         <input type="hidden" id="product_id" value="{product_id}">
                         
                         <div class="form-group">
-                            <label for="user_name">Your Name:</label>
+                            <label for="user_name">ваше имя:</label>
                             <input type="text" id="user_name" required placeholder="Enter your name">
                         </div>
                         
                         <div class="form-group">
-                            <label>Rating:</label>
+                            <label>Рейтинг:</label>
                             <div class="star-rating">
                                 <span class="star" data-value="1">⭐</span>
                                 <span class="star" data-value="2">⭐</span>
@@ -83,23 +83,23 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="review_text">Your Review:</label>
+                            <label for="review_text">Ваш отзыв:</label>
                             <textarea id="review_text" rows="4" required placeholder="Share your experience with this product..."></textarea>
                         </div>
                         
                         <button type="submit" class="submit-review-btn">
-                            <span>Submit Review</span>
+                            <span>Отправить отзыв</span>
                             <div class="loading" style="display: none;"></div>
                         </button>
                         
                         <div class="form-note">
-                            <small>⚠️ Your review will be analyzed by AI for spam and sentiment</small>
+                            <small>⚠️  Ваш отзыв будет проанализирован искусственным интеллектом на предмет наличия спама и настроений</small>
                         </div>
                     </form>
                 </div>
 
                 <div class="reviews-list">
-                    <h3>All Reviews</h3>
+                    <h3>Все отзывы</h3>
                     <!-- REVIEWS_PLACEHOLDER -->
                 </div>
             </div>
@@ -197,3 +197,4 @@
     </script>
 </body>
 </html>
+
