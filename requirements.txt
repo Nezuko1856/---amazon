@@ -2,6 +2,7 @@ flask
 pandas
 scikit-learn
 nltk
-kagglehub
 tensorflow
 numpy
+scipy
+kagglehub
