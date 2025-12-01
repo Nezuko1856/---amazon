@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Review Moderation</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>⚡ Admin Panel</h1>
+                <p>Review Moderation Dashboard</p>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">← Back to Store</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>Total Reviews</h3>
+                        <p class="stat-number">{total_reviews}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card positive">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3>Positive</h3>
+                        <p class="stat-number">{positive_count}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card negative">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-info">
+                        <h3>Negative</h3>
+                        <p class="stat-number">{negative_count}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card spam">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3>Spam Detected</h3>
+                        <p class="stat-number">{spam_count}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h2>📈 Product Statistics</h2>
+                    <div class="products-stats">
+                        <!-- PRODUCTS_STATS_PLACEHOLDER -->
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h2>⚙️ System Info</h2>
+                    <div class="system-info">
+                        <p><strong>Neural Network Accuracy:</strong> 92.7%</p>
+                        <p><strong>Spam Detection Rate:</strong> 95%</p>
+                        <p><strong>Processing Time:</strong> 30-50ms</p>
+                        <p><strong>Model:</strong> TensorFlow Neural Network</p>
+                        <p><strong>Training Data:</strong> 500,000+ Amazon Reviews</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card full-width">
+                <h2>📝 All Reviews</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>User</th>
+                                <th>Rating</th>
+                                <th>Review Text</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- REVIEWS_TABLE_PLACEHOLDER -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h2>🔍 Spam Detection Rules</h2>
+                <ul class="rules-list">
+                    <li>✅ Text with >30% digits → SPAM</li>
+                    <li>✅ Text with >30% special chars → SPAM</li>
+                    <li>✅ Text with <40% letters → SPAM</li>
+                    <li>✅ Mixed alphanumeric words → SPAM</li>
+                    <li>✅ Non-English characters → SPAM</li>
+                    <li>✅ Repeating patterns → SPAM</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Анимация строк таблицы
+            const rows = document.querySelectorAll('.admin-table tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

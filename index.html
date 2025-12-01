@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Smart Products</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🛍️ TechStore</h1>
+                <p>Smart Products Marketplace</p>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Products</a>
+                <a href="/admin" class="nav-link">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="store-header">
+            <h1>Discover Amazing Products</h1>
+            <p>Browse our collection of premium tech products with AI-powered review moderation</p>
+        </header>
+
+        <div class="filters">
+            <div class="store-stats">
+                <span class="stat-item">🛡️ AI Moderation</span>
+                <span class="stat-item">⭐ Verified Reviews</span>
+                <span class="stat-item">🚚 Fast Delivery</span>
+            </div>
+        </div>
+
+        <div class="products-grid">
+            
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Moderation</h3>
+                <p>Our neural network automatically analyzes every review for spam and sentiment</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Verified Reviews</h3>
+                <p>Only genuine customer feedback displayed after AI verification</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Spam Protection</h3>
+                <p>Advanced filters detect and remove fake reviews automatically</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>TechStore © 2024 | AI Review Moderation System Demo</p>
+        <p>Neural Network Accuracy: 92.7% | Spam Detection: 95%</p>
+    </footer>
+
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            document.querySelectorAll('.product-star-rating .star').forEach(star => {
+                star.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const ratingValue = this.getAttribute('data-value');
+                    const productId = productCard.getAttribute('data-product-id');
+                    
+                    
+                    const stars = productCard.querySelectorAll('.product-star-rating .star');
+                    stars.forEach(s => {
+                        s.style.color = s.getAttribute('data-value') <= ratingValue ? '#ffd700' : '#ccc';
+                    });
+                    
+                    
+                    localStorage.setItem(`product_rating_${productId}`, ratingValue);
+                    
+                    
+                    const productName = productCard.querySelector('h3').textContent;
+                    showNotification(`You rated "${productName}" ${ratingValue} stars!`, 'success');
+                });
+            });
+            
+            
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productId = card.getAttribute('data-product-id');
+                const savedRating = localStorage.getItem(`product_rating_${productId}`);
+                
+                if (savedRating) {
+                    const stars = card.querySelectorAll('.product-star-rating .star');
+                    stars.forEach(s => {
+                        s.style.color = s.getAttribute('data-value') <= savedRating ? '#ffd700' : '#ccc';
+                    });
+                }
+            });
+        });
+        
+        function showNotification(message, type) {
+            
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                document.body.appendChild(notification);
+            }
+            
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

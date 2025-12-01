@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{product_name} - TechStore</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🛍️ TechStore</h1>
+                <p>Smart Products Marketplace</p>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">← Back to Store</a>
+                <a href="/admin" class="nav-link">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="product-page">
+            <div class="product-main">
+                <div class="product-image-large">
+                    <div class="image-placeholder">{product_image}</div>
+                </div>
+                
+                <div class="product-details">
+                    <div class="product-breadcrumb">
+                        <a href="/">Home</a> / <span>{product_category}</span>
+                    </div>
+                    
+                    <h1>{product_name}</h1>
+                    <div class="product-category">{product_category}</div>
+                    
+                    <div class="product-price-rating">
+                        <div class="price-tag">{product_price}</div>
+                        <div class="product-rating">
+                            <span class="stars">{"⭐" * int(product_rating)}</span>
+                            <span class="rating-value">{product_rating}/5</span>
+                        </div>
+                    </div>
+                    
+                    <p class="product-description">{product_description}</p>
+                    
+                    <div class="product-features">
+                        <h3>Key Features</h3>
+                        <ul>
+                            <li>Premium quality materials</li>
+                            <li>Latest technology integration</li>
+                            <li>1-year warranty included</li>
+                            <li>Free shipping available</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-section">
+                <h2>Customer Reviews <span class="ai-badge">🤖 AI-Moderated</span></h2>
+                
+                <div class="review-form-container">
+                    <h3>Write a Review</h3>
+                    <form id="reviewForm">
+                        <input type="hidden" id="product_id" value="{product_id}">
+                        
+                        <div class="form-group">
+                            <label for="user_name">Your Name:</label>
+                            <input type="text" id="user_name" required placeholder="Enter your name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Rating:</label>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">⭐</span>
+                                <span class="star" data-value="2">⭐</span>
+                                <span class="star" data-value="3">⭐</span>
+                                <span class="star" data-value="4">⭐</span>
+                                <span class="star" data-value="5">⭐</span>
+                            </div>
+                            <input type="hidden" id="rating" value="5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="review_text">Your Review:</label>
+                            <textarea id="review_text" rows="4" required placeholder="Share your experience with this product..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-review-btn">
+                            <span>Submit Review</span>
+                            <div class="loading" style="display: none;"></div>
+                        </button>
+                        
+                        <div class="form-note">
+                            <small>⚠️ Your review will be analyzed by AI for spam and sentiment</small>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="reviews-list">
+                    <h3>All Reviews</h3>
+                    <!-- REVIEWS_PLACEHOLDER -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Звёздный рейтинг
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.getAttribute('data-value');
+                document.getElementById('rating').value = rating;
+                
+                document.querySelectorAll('.star').forEach(s => {
+                    s.style.color = s.getAttribute('data-value') <= rating ? '#ffd700' : '#ccc';
+                });
+            });
+        });
+        
+        // Устанавливаем начальный рейтинг 5 звёзд
+        document.querySelectorAll('.star').forEach(s => {
+            s.style.color = s.getAttribute('data-value') <= 5 ? '#ffd700' : '#ccc';
+        });
+
+        // Отправка отзыва
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-review-btn');
+            const btnText = submitBtn.querySelector('span');
+            const loading = submitBtn.querySelector('.loading');
+            
+            const reviewData = {
+                product_id: document.getElementById('product_id').value,
+                user_name: document.getElementById('user_name').value,
+                rating: document.getElementById('rating').value,
+                text: document.getElementById('review_text').value
+            };
+            
+            if (!reviewData.text.trim()) {
+                showNotification('Please write your review!', 'warning');
+                return;
+            }
+            
+            btnText.style.display = 'none';
+            loading.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/submit_review', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(reviewData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`Review submitted! AI analysis: ${result.prediction}`, 'success');
+                    // Очистка формы
+                    document.getElementById('user_name').value = '';
+                    document.getElementById('review_text').value = '';
+                    document.getElementById('rating').value = '5';
+                    document.querySelectorAll('.star').forEach(s => {
+                        s.style.color = s.getAttribute('data-value') <= 5 ? '#ffd700' : '#ccc';
+                    });
+                    
+                    // Перезагрузка страницы через 2 секунды
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showNotification(`Error: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showNotification('Error submitting review', 'error');
+                console.error(error);
+            } finally {
+                btnText.style.display = 'inline-block';
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
