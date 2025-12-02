@@ -18,14 +18,14 @@ import re
 import os
 import numpy as np
 
-# Скачиваем NLTK данные
+
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
 nltk.download('omw-1.4', quiet=True)
 
 
 
-print("📥 Загрузка и подготовка данных...")
+
 
 # Если kagglehub не работает, используем локальный файл
 try:
@@ -36,7 +36,7 @@ except Exception as e:
     print(f" Ошибка загрузки датасета: {e}")
     print(" Создаем тестовый датасет...")
     
-    # Создаем тестовый датасет
+
     np.random.seed(42)
     n_samples = 50000
     
@@ -117,7 +117,7 @@ def preprocess_text(text):
     words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]
     return ' '.join(words)
 
-print("\n🔄 Предобработка текста...")
+
 df['Processed_Text'] = df['Text'].apply(preprocess_text)
 
 # Разделение данных
@@ -150,7 +150,7 @@ label_encoder = LabelEncoder()
 y_train_enc = label_encoder.fit_transform(y_train)
 y_test_enc = label_encoder.transform(y_test)
 
-# Создание модели
+
 
 model = Sequential([
     Dense(256, activation='relu', input_shape=(X_train_vec.shape[1],)),
@@ -161,7 +161,7 @@ model = Sequential([
     Dropout(0.2),
     Dense(32, activation='relu'),
     Dropout(0.1),
-    Dense(1, activation='sigmoid')  # Один выход для бинарной классификации
+    Dense(1, activation='sigmoid')  
 ])
 
 model.compile(
@@ -172,7 +172,7 @@ model.compile(
 
 print(model.summary())
 
-# Callbacks
+
 callbacks = [
     EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True),
     ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.00001)
@@ -190,12 +190,11 @@ history = model.fit(
 )
 
 # Оценка модели
-print("\n📊 Оценка модели на тестовых данных...")
 test_loss, test_accuracy, test_precision, test_recall = model.evaluate(
     X_test_vec.toarray(), y_test_enc, verbose=0
 )
 
-# Предсказания для отчета
+
 y_pred = (model.predict(X_test_vec.toarray()) > 0.5).astype(int)
 
 
@@ -204,7 +203,7 @@ print(f"Precision: {test_precision:.4f}")
 print(f"Recall: {test_recall:.4f}")
 print(f"F1-Score: {2 * test_precision * test_recall / (test_precision + test_recall):.4f}")
 
-# Сохранение модели и векторизатора
+
 
 model.save('neural_model.keras')
 
@@ -214,7 +213,7 @@ with open('vectorizer.pkl', 'wb') as f:
 with open('label_encoder.pkl', 'wb') as f:
     pickle.dump(label_encoder, f)
 
-# Сохраняем историю обучения
+
 with open('training_history.pkl', 'wb') as f:
     pickle.dump(history.history, f)
 
@@ -231,7 +230,7 @@ test_samples = [
 ]
 
 for text, expected in test_samples:
-    # Проверка на спам
+    
     is_spam = False
     spam_reason = ""
     
@@ -258,3 +257,4 @@ for text, expected in test_samples:
         
         print(f"   Ожидаемый: {expected}, Предсказанный: {sentiment} ({confidence:.2%})")
     
+
