@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template_string
 from model import ReviewClassifier
 import pandas as pd
 import os
@@ -125,7 +125,7 @@ def product_page(product_id):
     else:
         reviews_html = '''
         <div class="no-reviews">
-            <div style="font-size: 3em; margin-bottom: 20px;">📝</div>
+            <div style="font-size: 3em; margin-bottom: 20px;"></div>
             <h3>No reviews yet</h3>
             <p>Be the first to review this product!</p>
         </div>
@@ -139,7 +139,7 @@ def product_page(product_id):
 
 @app.route('/submit_review', methods=['POST'])
 def submit_review():
-    """API для добавления нового отзыва - ОСНОВНОЙ API ДЛЯ МОДЕЛИ"""
+    """API для добавления нового отзыва"""
     try:
         data = request.json
         product_id = int(data['product_id'])
@@ -171,7 +171,7 @@ def submit_review():
             'prediction': [prediction],
             'confidence': [float(confidence)],
             'reason': [reason],
-            'timestamp': [datetime.now().strftime('%Y-%m-%d %H:%M')]
+            'timestamp': [datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
         })
         
         df = pd.concat([df, new_review], ignore_index=True)
@@ -185,7 +185,6 @@ def submit_review():
         })
         
     except Exception as e:
-        print(f"Error submitting review: {e}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
 @app.route('/admin')
@@ -199,6 +198,8 @@ def admin():
         positive_count = 0
         negative_count = 0
         spam_count = 0
+        reviews_list = []
+        product_stats_list = []
     else:
         df = df.dropna()
         if 'confidence' in df.columns:
@@ -210,93 +211,48 @@ def admin():
         positive_count = len(df[df['prediction'] == 'positive']) if 'prediction' in df.columns else 0
         negative_count = len(df[df['prediction'] == 'negative']) if 'prediction' in df.columns else 0
         spam_count = len(df[df['prediction'] == 'spam']) if 'prediction' in df.columns else 0
-    
-    # Отзывы по товарам
-    if len(df) > 0 and 'product_name' in df.columns and 'rating' in df.columns:
-        product_stats = df.groupby('product_name').agg({
-            'prediction': 'count',
-            'rating': 'mean'
-        }).round(2).reset_index()
-    else:
-        product_stats = pd.DataFrame(columns=['product_name', 'prediction', 'rating'])
-    
-    with open('admin.html', 'r', encoding='utf-8') as f:
-        html = f.read()
-    
-    # Заменяем статистику
-    html = html.replace('{total_reviews}', str(total_reviews))
-    html = html.replace('{positive_count}', str(positive_count))
-    html = html.replace('{negative_count}', str(negative_count))
-    html = html.replace('{spam_count}', str(spam_count))
-    
-    # Получаем статистику модели
-    model_stats = classifier.get_stats()
-    
-    # Генерация таблицы отзывов
-    reviews_html = ''
-    if len(df) > 0 and 'prediction' in df.columns:
+        
+        # Список отзывов для шаблона
+        reviews_list = []
         for _, review in df.iterrows():
-            sentiment_class = review['prediction'] if 'prediction' in review else 'unknown'
-            sentiment_icon = '✅' if sentiment_class == 'positive' else '❌' if sentiment_class == 'negative' else '⚠️'
-            
-            # Создаем звёзды для рейтинга
-            review_stars = "⭐" * int(review['rating']) if 'rating' in review else ''
-            
-            # Безопасное получение значений
-            text = review['text'] if 'text' in review else ''
-            confidence = float(review['confidence']) if 'confidence' in review else 0
-            reason = review['reason'] if 'reason' in review else ''
-            timestamp = review['timestamp'] if 'timestamp' in review else ''
-            user_name = review['user_name'] if 'user_name' in review else ''
-            product_name = review['product_name'] if 'product_name' in review else ''
-            
-            reviews_html += f'''
-            <tr class="review-row {sentiment_class}">
-                <td>{product_name}</td>
-                <td>{user_name}</td>
-                <td>{review_stars}</td>
-                <td class="review-text-cell">{text[:100]}{"..." if len(text) > 100 else ""}</td>
-                <td><span class="sentiment-badge {sentiment_class}">{sentiment_icon} {sentiment_class.upper()}</span></td>
-                <td>{confidence*100:.1f}%</td>
-                <td>{reason if reason != 'OK' else 'Valid'}</td>
-                <td>{timestamp}</td>
-            </tr>
-            '''
-    else:
-        reviews_html = '''
-        <tr>
-            <td colspan="8" style="text-align: center; padding: 40px;">
-                <div style="font-size: 3em;">📝</div>
-                <h3>No reviews yet</h3>
-                <p>Reviews will appear here once users start submitting them</p>
-            </td>
-        </tr>
-        '''
+            review_dict = {
+                'product_name': review['product_name'] if 'product_name' in review else 'Unknown',
+                'user_name': review['user_name'] if 'user_name' in review else 'Anonymous',
+                'rating': int(review['rating']) if 'rating' in review else 0,
+                'text': review['text'] if 'text' in review else '',
+                'prediction': review['prediction'] if 'prediction' in review else 'unknown',
+                'confidence': float(review['confidence']) if 'confidence' in review else 0.0,
+                'reason': review['reason'] if 'reason' in review else '',
+                'timestamp': review['timestamp'] if 'timestamp' in review else ''
+            }
+            reviews_list.append(review_dict)
+        
+        # Статистика по товарам
+        product_stats_list = []
+        if 'product_name' in df.columns and len(df) > 0:
+            for product_name in df['product_name'].unique():
+                product_df = df[df['product_name'] == product_name]
+                product_stats = {
+                    'name': product_name,
+                    'total_reviews': len(product_df),
+                    'positive': len(product_df[product_df['prediction'] == 'positive']),
+                    'negative': len(product_df[product_df['prediction'] == 'negative']),
+                    'spam': len(product_df[product_df['prediction'] == 'spam'])
+                }
+                product_stats_list.append(product_stats)
     
-    html = html.replace('<!-- REVIEWS_TABLE_PLACEHOLDER -->', reviews_html)
+    # Загружаем шаблон
+    with open('admin.html', 'r', encoding='utf-8') as f:
+        template = f.read()
     
-    # Генерация статистики по товарам
-    products_stats_html = ''
-    if len(product_stats) > 0:
-        for _, stat in product_stats.iterrows():
-            products_stats_html += f'''
-            <div class="product-stat">
-                <h4>{stat['product_name']}</h4>
-                <p>Total Reviews: {int(stat['prediction'])}</p>
-                <p>Average Rating: {stat['rating']:.1f} ⭐</p>
-            </div>
-            '''
-    else:
-        products_stats_html = '''
-        <div class="product-stat">
-            <h4>No reviews yet</h4>
-            <p>Product statistics will appear here</p>
-        </div>
-        '''
-    
-    html = html.replace('<!-- PRODUCTS_STATS_PLACEHOLDER -->', products_stats_html)
-    
-    return html
+    # Рендерим шаблон с передачей данных
+    return render_template_string(template,
+                                 total_reviews=total_reviews,
+                                 positive_count=positive_count,
+                                 negative_count=negative_count,
+                                 spam_count=spam_count,
+                                 reviews=reviews_list,
+                                 product_stats=product_stats_list)
 
 @app.route('/style.css')
 def style():
@@ -317,19 +273,10 @@ def not_found(error):
 @app.errorhandler(500)
 def internal_error(error):
     """Обработка 500 ошибок"""
-    print(f"Internal server error: {error}")
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
 
-    
-    # Проверяем отзывы
-    if os.path.exists(reviews_file):
-        df = pd.read_csv(reviews_file)
-        print(f" Всего отзывов в базе: {len(df)}")
-    
-
     print("  • http://localhost:5000/ - Главная страница")
 
-    
     app.run(debug=True, port=5000)
