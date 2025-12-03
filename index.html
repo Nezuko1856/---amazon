@@ -4,15 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechStore - Smart Products</title>
-    <link rel="stylesheet" href="/style.css">
     <style>
+        /* Основные стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Главная страница */
+        .store-header {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-header h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .store-header p {
+            color: #666;
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .filters {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .store-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
             margin: 40px 0;
         }
-        
+
         .product-card {
             background: white;
             border-radius: 15px;
@@ -20,66 +132,63 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             border: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
         }
-        
+
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
-        
+
         .product-image {
             font-size: 3em;
             text-align: center;
             margin-bottom: 20px;
         }
-        
+
         .product-info h3 {
             margin: 0 0 10px 0;
             color: #333;
             font-size: 1.3em;
         }
-        
+
         .category {
             color: #667eea;
             font-size: 0.9em;
             font-weight: 600;
             margin-bottom: 10px;
         }
-        
+
         .description {
             color: #666;
             font-size: 0.95em;
             line-height: 1.5;
             margin-bottom: 20px;
-            flex-grow: 1;
         }
-        
+
         .product-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        
+
         .price {
             font-size: 1.4em;
             font-weight: bold;
             color: #764ba2;
         }
-        
+
         .rating {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        
+
         .review-count {
             color: #666;
             font-size: 0.9em;
         }
-        
+
         .view-btn {
             display: block;
             text-align: center;
@@ -91,60 +200,20 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        
+
         .view-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        
-        .store-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .store-header h1 {
-            font-size: 2.8em;
-            margin-bottom: 10px;
-        }
-        
-        .store-header p {
-            color: #666;
-            font-size: 1.1em;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .filters {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .store-stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-        
+
+        /* Features section */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin: 50px 0;
         }
-        
+
         .feature-card {
             background: white;
             padding: 30px;
@@ -153,33 +222,66 @@
             text-align: center;
             border: 1px solid #e0e0e0;
         }
-        
+
         .feature-icon {
             font-size: 3em;
             margin-bottom: 20px;
         }
-        
+
         .feature-card h3 {
             margin-bottom: 15px;
             color: #333;
         }
-        
+
         .feature-card p {
             color: #666;
             line-height: 1.6;
         }
-        
+
+        /* Footer */
         footer {
             text-align: center;
             margin-top: 50px;
             padding: 30px;
-            background: #f8fafc;
+            background: white;
             border-radius: 15px;
             color: #666;
         }
-        
+
         footer p {
             margin: 5px 0;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+            transform: translateX(0);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -205,29 +307,29 @@
 
         <div class="filters">
             <div class="store-stats">
-                <span class="stat-item">🛡️ AI Moderation</span>
-                <span class="stat-item">⭐ Verified Reviews</span>
-                <span class="stat-item">🚚 Fast Delivery</span>
+                <span class="stat-item"> AI Moderation</span>
+                <span class="stat-item"> Verified Reviews</span>
+                <span class="stat-item"> Fast Delivery</span>
             </div>
         </div>
 
         <div class="products-grid">
-            <!-- Products will be inserted here by Flask -->
+            <!-- PRODUCTS_PLACEHOLDER -->
         </div>
 
         <div class="features">
             <div class="feature-card">
-                <div class="feature-icon">🤖</div>
+                <div class="feature-icon"></div>
                 <h3>AI-Powered Moderation</h3>
                 <p>Our neural network automatically analyzes every review for spam and sentiment</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">⭐</div>
+                <div class="feature-icon"></div>
                 <h3>Verified Reviews</h3>
                 <p>Only genuine customer feedback displayed after AI verification</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
+                <div class="feature-icon"></div>
                 <h3>Spam Protection</h3>
                 <p>Advanced filters detect and remove fake reviews automatically</p>
             </div>
@@ -243,12 +345,8 @@
 
     <script>
         function showNotification(message, type) {
-            let notification = document.getElementById('notification');
-            if (!notification) {
-                notification = document.createElement('div');
-                notification.id = 'notification';
-                document.body.appendChild(notification);
-            }
+            const notification = document.getElementById('notification');
+            if (!notification) return;
             
             notification.textContent = message;
             notification.className = `notification ${type} show`;
