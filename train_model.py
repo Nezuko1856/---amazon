@@ -18,92 +18,37 @@ import re
 import os
 import numpy as np
 
-
+# Загрузка NLTK данных
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
 nltk.download('omw-1.4', quiet=True)
 
 
-
-
-
-# Если kagglehub не работает, используем локальный файл
 try:
+    # Загрузка датасета с отзывами Amazon
     path = kagglehub.dataset_download("arhamrumi/amazon-product-reviews")
     df = pd.read_csv(path + '/Reviews.csv')
-    print(f" Датасет загружен: {len(df)} записей")
+
+    
 except Exception as e:
-    print(f" Ошибка загрузки датасета: {e}")
-    print(" Создаем тестовый датасет...")
-    
+    print(f"Ошибка загрузки датасета: {e}")
+    print("Для работы программы необходим датасет с Kaggle")
+    exit(1)
 
-    np.random.seed(42)
-    n_samples = 50000
-    
-    # Генерация реалистичных отзывов
-    positive_templates = [
-        "Excellent product! {feature} works perfectly.",
-        "Very satisfied with my purchase. The {feature} is amazing.",
-        "Great value for money. {feature} exceeded my expectations.",
-        "Highly recommend! {feature} is top quality.",
-        "Best purchase ever. The {feature} is fantastic.",
-        "Love this product! {feature} is excellent.",
-        "Amazing quality, very happy with {feature}.",
-        "Perfect product for my needs. {feature} works great.",
-        "Would buy again. {feature} is reliable and durable.",
-        "Excellent performance from {feature}. Highly satisfied."
-    ]
-    
-    negative_templates = [
-        "Terrible product. {feature} broke immediately.",
-        "Very disappointed. The {feature} doesn't work properly.",
-        "Waste of money. {feature} is poor quality.",
-        "Do not recommend. {feature} failed after 2 days.",
-        "Worst purchase. {feature} is defective.",
-        "Poor quality product. {feature} stopped working.",
-        "Not worth the price. {feature} has issues.",
-        "Very unhappy with {feature}. Doesn't meet expectations.",
-        "Would not buy again. {feature} is unreliable.",
-        "Disappointing performance from {feature}."
-    ]
-    
-    features = ['battery', 'screen', 'camera', 'performance', 'sound', 
-                'build quality', 'software', 'design', 'price', 'delivery']
-    
-    reviews = []
-    scores = []
-    
-    for i in range(n_samples):
-        if np.random.random() > 0.3:  # 70% positive, 30% negative
-            template = np.random.choice(positive_templates)
-            score = 5  # Все positive получают 5 звёзд
-        else:
-            template = np.random.choice(negative_templates)
-            score = 1  # Все negative получают 1 звезду
-            
-        feature = np.random.choice(features)
-        review = template.format(feature=feature)
-        
-        reviews.append(review)
-        scores.append(score)
-    
-    df = pd.DataFrame({'Text': reviews, 'Score': scores})
-    print(f" Тестовый датасет создан: {len(df)} записей")
-
-# Ограничиваем до 50к записей
+# Ограничиваем до 50к записей для быстрого обучения
 if len(df) > 50000:
     df = df.sample(n=50000, random_state=42)
-    print(f" Используем 50,000 случайных записей из датасета")
-else:
-    print(f" Используем все {len(df)} записей")
 
-# Подготовка данных
+
+
+# Подготовка данных - используем Text и Score
 df = df[['Text', 'Score']].dropna()
 df['Sentiment'] = df['Score'].apply(lambda x: 'positive' if x > 3 else 'negative')
 
-print(df['Sentiment'].value_counts())
-print(f"Positive: {len(df[df['Sentiment'] == 'positive']):,} ({len(df[df['Sentiment'] == 'positive'])/len(df)*100:.1f}%)")
-print(f"Negative: {len(df[df['Sentiment'] == 'negative']):,} ({len(df[df['Sentiment'] == 'negative'])/len(df)*100:.1f}%)")
+# Балансировка классов
+positive_count = len(df[df['Sentiment'] == 'positive'])
+negative_count = len(df[df['Sentiment'] == 'negative'])
+
 
 # Предобработка текста
 lemmatizer = WordNetLemmatizer()
@@ -117,7 +62,7 @@ def preprocess_text(text):
     words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]
     return ' '.join(words)
 
-
+print("Предобработка текста...")
 df['Processed_Text'] = df['Text'].apply(preprocess_text)
 
 # Разделение данных
@@ -128,12 +73,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=df['Sentiment']
 )
 
+print(f"Тренировочная выборка: {len(X_train)} записей")
+print(f"Тестовая выборка: {len(X_test)} записей")
 
-print(f"Тренировочная выборка: {len(X_train):,} записей")
-print(f"Тестовая выборка: {len(X_test):,} записей")
-
-# Векторизация
-
+# Векторизация текста
 vectorizer = TfidfVectorizer(
     max_features=2000,
     min_df=5,
@@ -150,8 +93,7 @@ label_encoder = LabelEncoder()
 y_train_enc = label_encoder.fit_transform(y_train)
 y_test_enc = label_encoder.transform(y_test)
 
-
-
+# Создание нейронной сети
 model = Sequential([
     Dense(256, activation='relu', input_shape=(X_train_vec.shape[1],)),
     Dropout(0.4),
@@ -161,7 +103,7 @@ model = Sequential([
     Dropout(0.2),
     Dense(32, activation='relu'),
     Dropout(0.1),
-    Dense(1, activation='sigmoid')  
+    Dense(1, activation='sigmoid')
 ])
 
 model.compile(
@@ -170,16 +112,13 @@ model.compile(
     metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
 )
 
-print(model.summary())
-
-
+# Callbacks
 callbacks = [
     EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True),
     ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=0.00001)
 ]
 
-# Обучение модели
-
+print("Обучение модели...")
 history = model.fit(
     X_train_vec.toarray(), y_train_enc,
     epochs=5,
@@ -194,16 +133,11 @@ test_loss, test_accuracy, test_precision, test_recall = model.evaluate(
     X_test_vec.toarray(), y_test_enc, verbose=0
 )
 
-
 y_pred = (model.predict(X_test_vec.toarray()) > 0.5).astype(int)
 
 
-print(f"Точность (Accuracy): {test_accuracy:.4f}")
-print(f"Precision: {test_precision:.4f}")
-print(f"Recall: {test_recall:.4f}")
-print(f"F1-Score: {2 * test_precision * test_recall / (test_precision + test_recall):.4f}")
 
-
+# Сохранение модели и компонентов
 
 model.save('neural_model.keras')
 
@@ -213,48 +147,6 @@ with open('vectorizer.pkl', 'wb') as f:
 with open('label_encoder.pkl', 'wb') as f:
     pickle.dump(label_encoder, f)
 
-
 with open('training_history.pkl', 'wb') as f:
     pickle.dump(history.history, f)
-
-
-test_samples = [
-    ("This product is absolutely amazing! Best purchase I've made all year.", "positive"),
-    ("Terrible quality, broke after just 2 days of use.", "negative"),
-    ("Good value for the price, works as expected.", "positive"),
-    ("Worst product ever, complete waste of money.", "negative"),
-    ("The camera quality is excellent and battery lasts all day.", "positive"),
-    ("BUY NOW!!! 50% OFF LIMITED TIME 12345 $$$", "spam"),
-    ("Excellent service and fast delivery. Highly recommended!", "positive"),
-    ("Doesn't work properly, very disappointed with this purchase.", "negative")
-]
-
-for text, expected in test_samples:
-    
-    is_spam = False
-    spam_reason = ""
-    
-    if len(text.split()) < 3:
-        is_spam = True
-        spam_reason = "Слишком короткий"
-    elif sum(c.isdigit() for c in text) / len(text) > 0.3:
-        is_spam = True
-        spam_reason = "Много цифр"
-    elif 'BUY NOW' in text.upper() or '$$$' in text or '!!!' in text:
-        is_spam = True
-        spam_reason = "Рекламный текст"
-    
-    if is_spam:
-        print(f" Текст: {text[:50]}...")
-        print(f"   Предсказанный: spam (95.00%)")
-        print(f"  Обнаружен спам: {spam_reason}")
-    else:
-        processed = preprocess_text(text)
-        vectorized = vectorizer.transform([processed])
-        prediction = model.predict(vectorized.toarray(), verbose=0)[0][0]
-        sentiment = 'positive' if prediction > 0.5 else 'negative'
-        confidence = prediction if sentiment == 'positive' else 1 - prediction
-        
-        print(f"   Ожидаемый: {expected}, Предсказанный: {sentiment} ({confidence:.2%})")
-    
 
