@@ -57,45 +57,34 @@ class ReviewClassifier:
         missing_files = [f for f in required_files if not os.path.exists(f)]
         
         if missing_files:
-            print("⚠️ Отсутствуют файлы модели. Запустите train_model.py для обучения.")
             raise FileNotFoundError(f"Отсутствуют файлы модели: {missing_files}")
         
         try:
             # Загрузка модели
             self.model = keras.models.load_model('neural_model.keras')
-            print("✅ Модель загружена")
             
             # Загрузка векторизатора
             with open('vectorizer.pkl', 'rb') as f:
                 self.vectorizer = pickle.load(f)
-            print("✅ Векторизатор загружен")
             
             # Загрузка label encoder
             with open('label_encoder.pkl', 'rb') as f:
                 self.label_encoder = pickle.load(f)
-            print("✅ Label encoder загружен")
             
             # Информация о модели
             self.model_info = {
                 'input_shape': self.model.input_shape,
                 'output_shape': self.model.output_shape,
                 'num_features': self.vectorizer.max_features if hasattr(self.vectorizer, 'max_features') else None,
-                'classes': ['negative', 'positive']  # Только два класса для нейронной сети
+                'classes': ['negative', 'positive']
             }
             
         except Exception as e:
-            print(f"⚠️ Ошибка загрузки: {e}")
             raise
     
     def is_spam(self, text: str) -> Tuple[bool, str]:
         """
         Проверка текста на спам
-        
-        Args:
-            text: Текст для проверки
-        
-        Returns:
-            Tuple[bool, str]: (является ли спамом, причина)
         """
         text = str(text).strip()
         
@@ -159,12 +148,6 @@ class ReviewClassifier:
     def preprocess_text(self, text: str) -> str:
         """
         Предобработка текста
-        
-        Args:
-            text: Исходный текст
-        
-        Returns:
-            str: Обработанный текст
         """
         # Удаляем HTML теги
         text = re.sub(r'<[^>]+>', '', str(text))
@@ -189,12 +172,6 @@ class ReviewClassifier:
         """
         Предсказание сентимента для текста
         Возвращает: 'positive', 'negative', или 'spam'
-        
-        Args:
-            text: Текст отзыва
-        
-        Returns:
-            Tuple[str, float, str]: (предсказание, уверенность, причина)
         """
         start_time = time.time()
         
@@ -246,7 +223,6 @@ class ReviewClassifier:
             return sentiment, confidence, "OK"
             
         except Exception as e:
-            print(f"⚠️ Ошибка в predict: {e}")
             self.stats['total_predictions'] += 1
             processing_time = time.time() - start_time
             self._update_avg_time(processing_time)
@@ -261,9 +237,6 @@ class ReviewClassifier:
     def get_stats(self) -> Dict[str, Any]:
         """
         Получение статистики использования
-        
-        Returns:
-            Dict[str, Any]: Статистика
         """
         stats = self.stats.copy()
         
@@ -284,12 +257,6 @@ class ReviewClassifier:
     def batch_predict(self, texts: list) -> list:
         """
         Пакетное предсказание для списка текстов
-        
-        Args:
-            texts: Список текстов
-        
-        Returns:
-            list: Список результатов
         """
         results = []
         for text in texts:
