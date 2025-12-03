@@ -3,188 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель администратор - Панель модерации отзывов</title>
+    <title>Панель администратора - Панель модерации отзывов</title>
     <link rel="stylesheet" href="/style.css">
-    <style>
-        .dashboard {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .stats-overview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-left: 5px solid #667eea;
-        }
-        
-        .stat-card.positive {
-            border-left-color: #10b981;
-        }
-        
-        .stat-card.negative {
-            border-left-color: #ef4444;
-        }
-        
-        .stat-card.spam {
-            border-left-color: #f59e0b;
-        }
-        
-        .stat-icon {
-            font-size: 2.5em;
-        }
-        
-        .stat-info h3 {
-            margin-bottom: 5px;
-            color: #333;
-            font-size: 1em;
-        }
-        
-        .stat-number {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-        }
-        
-        .dashboard-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dashboard-card.full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .dashboard-card h2 {
-            margin-bottom: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .products-stats {
-            display: grid;
-            gap: 15px;
-        }
-        
-        .product-stat {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        
-        .product-stat h4 {
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .product-stat p {
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .system-info p {
-            margin-bottom: 10px;
-            color: #666;
-        }
-        
-        .system-info strong {
-            color: #333;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-        }
-        
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .admin-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-        
-        .admin-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e5e7eb;
-            color: #666;
-        }
-        
-        .admin-table tr:hover {
-            background: #f8fafc;
-        }
-        
-        .review-text-cell {
-            max-width: 200px;
-            word-wrap: break-word;
-        }
-        
-        .rules-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .rules-list li {
-            margin-bottom: 10px;
-            padding-left: 25px;
-            position: relative;
-            color: #666;
-        }
-        
-        .rules-list li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .admin-table {
-                font-size: 14px;
-            }
-            
-            .admin-table th,
-            .admin-table td {
-                padding: 10px;
-            }
-        }
-    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <h1> Панель администратора </h1>
+                <h1>⚡ Панель администратора</h1>
                 <p>Панель модерации отзывов</p>
             </div>
             <div class="nav-links">
@@ -197,89 +23,138 @@
         <div class="dashboard">
             <div class="stats-overview">
                 <div class="stat-card">
-                    <div class="stat-icon"></div>
+                    <div class="stat-icon">📊</div>
                     <div class="stat-info">
-                        <h3>Total Reviews</h3>
-                        <p class="stat-number">{total_reviews}</p>
+                        <h3>Общее количество отзывов</h3>
+                        <p class="stat-number">{{ total_reviews }}</p>
                     </div>
                 </div>
                 
                 <div class="stat-card positive">
                     <div class="stat-icon">✅</div>
                     <div class="stat-info">
-                        <h3>Positive</h3>
-                        <p class="stat-number">{positive_count}</p>
+                        <h3>Положительные</h3>
+                        <p class="stat-number">{{ positive_count }}</p>
                     </div>
                 </div>
                 
                 <div class="stat-card negative">
                     <div class="stat-icon">❌</div>
                     <div class="stat-info">
-                        <h3>Negative</h3>
-                        <p class="stat-number">{negative_count}</p>
+                        <h3>Отрицательные</h3>
+                        <p class="stat-number">{{ negative_count }}</p>
                     </div>
                 </div>
                 
                 <div class="stat-card spam">
                     <div class="stat-icon">⚠️</div>
                     <div class="stat-info">
-                        <h3>Spam Detected</h3>
-                        <p class="stat-number">{spam_count}</p>
+                        <h3>Обнаружен спам</h3>
+                        <p class="stat-number">{{ spam_count }}</p>
                     </div>
                 </div>
             </div>
 
             <div class="dashboard-grid">
                 <div class="dashboard-card">
-                    <h2>📈 Product Statistics</h2>
+                    <h2>📈 Статистика товаров</h2>
                     <div class="products-stats">
-                        <!-- PRODUCTS_STATS_PLACEHOLDER -->
+                        {% if product_stats %}
+                            {% for product in product_stats %}
+                            <div class="product-stat">
+                                <h4>{{ product.name }}</h4>
+                                <p>Общее количество отзывов: {{ product.total_reviews }}</p>
+                                <p>Положительных: {{ product.positive }} | Отрицательных: {{ product.negative }} | Спам: {{ product.spam }}</p>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="product-stat">
+                                <h4>Нет отзывов</h4>
+                                <p>Статистика появится после добавления отзывов</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="dashboard-card">
-                    <h2> System Info</h2>
+                    <h2>⚙️ Системная информация</h2>
                     <div class="system-info">
-                        <p><strong>Neural Network Accuracy:</strong> 92.7%</p>
-                        <p><strong>Spam Detection Rate:</strong> 95%</p>
-                        <p><strong>Processing Time:</strong> 30-50ms</p>
-                        <p><strong>Model:</strong> TensorFlow Neural Network</p>
-                        <p><strong>Training Data:</strong> 500,000+ Amazon Reviews</p>
+                        <p><strong>Точность нейронной сети:</strong> 92.7%</p>
+                        <p><strong>Точность обнаружения спама:</strong> 95%</p>
+                        <p><strong>Время обработки:</strong> 30–50 мс</p>
+                        <p><strong>Модель:</strong> TensorFlow Neural Network</p>
+                        <p><strong>Обучающие данные:</strong> 500,000+ Amazon Reviews</p>
                     </div>
                 </div>
             </div>
 
             <div class="dashboard-card full-width">
-                <h2>📝 All Reviews</h2>
+                <h2>📝 Все отзывы</h2>
                 <div class="table-container">
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>User</th>
-                                <th>Rating</th>
-                                <th>Review Text</th>
-                                <th>Prediction</th>
-                                <th>Confidence</th>
-                                <th>Reason</th>
-                                <th>Time</th>
+                                <th>Продукт</th>
+                                <th>Пользователь</th>
+                                <th>Оценка</th>
+                                <th>Текст отзыва</th>
+                                <th>Предсказание</th>
+                                <th>Уверенность</th>
+                                <th>Причина</th>
+                                <th>Время</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- REVIEWS_TABLE_PLACEHOLDER -->
+                            {% if reviews %}
+                                {% for review in reviews %}
+                                <tr class="review-row {{ review.prediction }}">
+                                    <td>{{ review.product_name }}</td>
+                                    <td>{{ review.user_name }}</td>
+                                    <td>
+                                        {% for i in range(5) %}
+                                            {% if i < review.rating|int %}
+                                                ⭐
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td class="review-text-cell">{{ review.text[:100] }}{% if review.text|length > 100 %}...{% endif %}</td>
+                                    <td>
+                                        <span class="sentiment-badge {{ review.prediction }}">
+                                            {% if review.prediction == 'positive' %}✅
+                                            {% elif review.prediction == 'negative' %}❌
+                                            {% else %}⚠️{% endif %}
+                                            {{ review.prediction|upper }}
+                                        </span>
+                                    </td>
+                                    <td>{{ "%.1f"|format(review.confidence * 100) }}%</td>
+                                    <td>{{ review.reason if review.reason != 'OK' else 'Валидный' }}</td>
+                                    <td>{{ review.timestamp }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <div style="font-size: 3em;">📝</div>
+                                        <h3>Отзывов пока нет</h3>
+                                        <p>Отзывы появятся здесь после их добавления пользователями</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
             </div>
             
             <div class="dashboard-card">
-                <h2> Spam Detection Rules</h2>
+                <h2>🔍 Правила обнаружения спама</h2>
                 <ul class="rules-list">
-                    <li> Текст, содержащий более 30 % цифр = SPAM</li>
-                    <li> Текст, содержащий более 30 % специальных символов = SPAM</li>
-                    <li>Текст, содержащий менее 40 % букв = SPAM</li>
-                    <li> Смешанные буквенно-цифровые слова = SPAM</li>
-                    <li> Неанглийские символы = SPAM</li>
+                    <li>Текст, содержащий более 30% цифр = SPAM</li>
+                    <li>Текст, содержащий более 30% специальных символов = SPAM</li>
+                    <li>Текст, содержащий менее 40% букв = SPAM</li>
+                    <li>Смешанные буквенно-цифровые слова = SPAM</li>
+                    <li>Неанглийские символы = SPAM</li>
                     <li>Повторяющиеся шаблоны = SPAM</li>
                 </ul>
             </div>
@@ -288,7 +163,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Анимация строк таблицы
             const rows = document.querySelectorAll('.admin-table tbody tr');
             rows.forEach((row, index) => {
                 row.style.opacity = '0';
@@ -304,4 +178,3 @@
     </script>
 </body>
 </html>
-
